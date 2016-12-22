@@ -6,8 +6,6 @@ from bottle import post, get, put, delete
 from pymongo import MongoClient
 from bson.json_util import dumps
 
-REGISTEREDSOLVERTYPES = ["DEFAULT", "ACTIVELEARNER"]
-
 namepattern = re.compile(r'^[a-zA-Z\d]{1,64}$')
 uuidpattern = re.compile(r'^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$')
 
@@ -33,25 +31,21 @@ def generateid():
 def creation_handler():
     '''Handles list creation'''
     try:
-        # parse input data
-        # try:
+
         data = request.json
-        # except:
-        #     raise ValueError
-        print(data)
+
+
         if data is None:
             raise ValueError
 
         # extract and validate name
         try:
-            if namepattern.match(data['name']) is None:
+            if data['name'] is None:
                 raise ValueError
             if data['elements'] is None:
                 raise ValueError
         except (TypeError, KeyError):
             raise ValueError
-
-        # check for existence
 
     except ValueError as e:
 
@@ -64,9 +58,11 @@ def creation_handler():
     except KeyError:
         # if name already exists, return 409 Conflict
         response.status = 409
+
         return
 
-    # add name
+    #insert entity
+
     data.update({"id":generateid()})
     db.lists.insert(data)
 
@@ -81,8 +77,9 @@ def listing_handler():
 
     response.headers['Content-Type'] = 'application/json'
     response.headers['Cache-Control'] = 'no-cache'
+
     return dumps(db.lists.find({},{"_id":0,"id":1,"name":1}))
-    #return json.dumps({'lists': list(_lists)})
+
 
 @get('/lists/<alist>')
 @allow_cors
@@ -93,8 +90,10 @@ def detail_handler(alist):
     response.headers['Cache-Control'] = 'no-cache'
 
     entity = db.lists.find_one({'id':alist},{"_id":0})
+
     if not entity:
         abort(404, 'No document with id %s' % id)
+
     return json.dumps(entity)
 
 
@@ -102,14 +101,18 @@ def detail_handler(alist):
 @allow_cors
 def delete_handler(alist):
     '''Handles name updates'''
+
     response.headers['Content-Type'] = 'application/json'
     response.headers['Cache-Control'] = 'no-cache'
 
     entity = db.lists.find_one({'id':alist})
+
     if not entity:
         abort(404, 'No document with id %s' % id)
+
     db.lists.remove(entity)
     response.status = 200
+
     return
 
 @get('/rtks')
@@ -119,8 +122,9 @@ def rtklisting_handler():
 
     response.headers['Content-Type'] = 'application/json'
     response.headers['Cache-Control'] = 'no-cache'
+
     return dumps(db.rtks.find({},{"id":1,"name":1,"_id":0}))
-    #return json.dumps({'lists': list(_lists)})
+
 
 @get('/solvers')
 @allow_cors
@@ -129,43 +133,38 @@ def solverlisting_handler():
 
     response.headers['Content-Type'] = 'application/json'
     response.headers['Cache-Control'] = 'no-cache'
+
     return dumps(db.solvers.find({},{"id":1,"name":1,"_id":0}))
-    #return json.dumps({'lists': list(_lists)})
 
 
 @post('/rtks')
 @allow_cors
 def creation_handler():
     '''Handles rtks creation'''
+
     try:
-        # parse input data
-        # try:
+
         data = request.json
-        # except:
-        #     raise ValueError
+
         if data is None:
             raise ValueError
-        # extract and validate name
+
         try:
             if uuidpattern.match(data['listid']) is None:
                 raise ValueError
-            if data['name'] is None:
+            if data.get('name') is None:
                 raise ValueError
             if data.get('solvertype') is None:
                 data['solvertype'] = "DEFAULT"
             if data.get('partialocclusion') is None:
                 data['partialocclusion'] = False
-            # if data['solvertype'] not in REGISTEREDSOLVERTYPES:
-            #     data.update({"solvertype":"DEFAULT"})
+
         except (TypeError, KeyError):
             raise ValueError
 
-        # check for existence
 
     except ValueError as e:
 
-        print("Value error", e)
-        # if bad request data, return 400 Bad Request
         response.status = 400
 
         return
@@ -173,9 +172,11 @@ def creation_handler():
     except KeyError:
         # if name already exists, return 409 Conflict
         response.status = 409
+
         return
 
-    # add name
+    # add entity to database
+
     data.update({"id":generateid()})
     data.update({"orderprogress":0.0})
     data.update({"orderedlist":[]})
@@ -185,11 +186,11 @@ def creation_handler():
     data.update({"candidatepairs":[]})
     data.update({"origcandidatepairs":0})
 
-
     db.rtks.insert(data)
 
     # return 200 Success
     response.headers['Content-Type'] = 'application/json'
+
     return json.dumps(data["id"])
 
 @get('/rtks/<artk>')
@@ -200,14 +201,12 @@ def rtkdetail_handler(artk):
     response.headers['Content-Type'] = 'application/json'
     response.headers['Cache-Control'] = 'no-cache'
     entity = db.rtks.find_one({'id':artk},{"_id":0})
+
     if not entity:
         abort(404, 'No document with id %s' % id)
+
     return json.dumps(entity)
 
-#@post('/rtks/<artk>/choice')
-
-#parametros: idrtk, winner: string, loser: string
-# return progress
 
 @post('/rtks/<artk>/choice')
 @allow_cors
@@ -215,18 +214,17 @@ def rtkchoice_handler(artk):
     '''Handles artk choice'''
 
     try:
-        # parse input data
-        # try:
+
         data = request.json
-        # except:
-        #     raise ValueError
+
         if data is None:
             raise ValueError
-        # extract and validate name
 
         entity = db.rtks.find_one({'id':artk})
+
         if not entity:
             abort(404, 'No document with id %s' % id)
+
         try:
             if data.get('winner') is None:
                 raise ValueError
@@ -237,9 +235,7 @@ def rtkchoice_handler(artk):
 
 
     except ValueError as e:
-
         print("Value error", e)
-        # if bad request data, return 400 Bad Request
         response.status = 400
 
         return
@@ -251,11 +247,14 @@ def rtkchoice_handler(artk):
 
     solvertype = entity["solvertype"]
     solver = importlib.import_module("api.solvers."+solvertype.lower())
+
     s = solver.Solver(artk)
     progress = s.pickchoice(data.get('winner'),data.get('loser'))
     s.save()
+
     # return 200 Success
     response.headers['Content-Type'] = 'application/json'
+
     return json.dumps(progress)
 
 
@@ -271,7 +270,7 @@ def detail_handler(artk):
     if not entity:
         abort(404, 'No document with id %s' % id)
 
-    solvertype = "DEFAULT" #entity["solvertype"]
+    solvertype = entity['solvertype']
     solver = importlib.import_module("api.solvers."+solvertype.lower())
     s = solver.Solver(artk)
     pair = s.newpair()
@@ -279,8 +278,7 @@ def detail_handler(artk):
     return json.dumps({"pair":pair,"progress":s.orderprogress})
 
 @bottle.route('/<:re:.*>', method='OPTIONS')
-#@bottle.route('/:#.*#', method='OPTIONS')  # Also tried old syntax.
 def enableCORSGenericRoute():
-    print 'Generic regex route'
+
     bottle.response.headers['Access-Control-Allow-Origin'] = '*'
 
