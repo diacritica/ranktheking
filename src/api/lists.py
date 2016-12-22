@@ -18,7 +18,7 @@ db = connection.testdb
 def allow_cors(func):
     """ this is a decorator which enable CORS for specified endpoint """
     def wrapper(*args, **kwargs):
-        response.headers['Access-Control-Allow-Origin'] = 'rtk.icarus.live' # * in case you want to be accessed via any website
+        response.headers['Access-Control-Allow-Origin'] = '*' # * in case you want to be accessed via any website
         return func(*args, **kwargs)
 
     return wrapper

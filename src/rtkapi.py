@@ -4,4 +4,4 @@ from api import lists
 app = application = bottle.default_app()
 
 if __name__ == '__main__':
-    bottle.run(host = '127.0.0.1', port = 8000)
+    bottle.run(host = 'rtk.icarus.live', port = 8001)
