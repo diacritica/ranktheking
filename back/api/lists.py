@@ -1,7 +1,7 @@
 import re, json
 import uuid
 import importlib
-from bottle import request, response, abort
+from bottle import request, response, abort, route
 from bottle import post, get, put, delete
 from pymongo import MongoClient
 from bson.json_util import dumps
@@ -249,6 +249,7 @@ def rtkchoice_handler(artk):
     solver = importlib.import_module("api.solvers."+solvertype.lower())
 
     s = solver.Solver(artk)
+    print(data["winner"],data["loser"])
     progress = s.pickchoice(data.get('winner'),data.get('loser'))
     s.save()
 
@@ -274,10 +275,11 @@ def detail_handler(artk):
     solver = importlib.import_module("api.solvers."+solvertype.lower())
     s = solver.Solver(artk)
     pair = s.newpair()
+    s.save()
 
     return json.dumps({"pair":pair,"progress":s.orderprogress})
 
-@bottle.route('/<:re:.*>', method='OPTIONS')
+@route('/<:re:.*>', method='OPTIONS')
 def enableCORSGenericRoute():
 
     bottle.response.headers['Access-Control-Allow-Origin'] = '*'
