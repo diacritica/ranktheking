@@ -66,7 +66,7 @@ def creation_handler():
 
     # add name
     data.update({"id":generateid()})
-    db.lists.insert_one(data)
+    db.lists.insert(data)
 
     # return 200 Success
     response.headers['Content-Type'] = 'application/json'
@@ -183,7 +183,8 @@ def creation_handler():
     data.update({"candidatepairs":[]})
     data.update({"origcandidatepairs":0})
 
-    db.rtks.insert_one(data)
+
+    db.rtks.insert(data)
 
     # return 200 Success
     response.headers['Content-Type'] = 'application/json'
@@ -196,7 +197,6 @@ def rtkdetail_handler(artk):
 
     response.headers['Content-Type'] = 'application/json'
     response.headers['Cache-Control'] = 'no-cache'
-    print("AAAA")
     entity = db.rtks.find_one({'id':artk},{"_id":0})
     if not entity:
         abort(404, 'No document with id %s' % id)

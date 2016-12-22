@@ -33,7 +33,7 @@ class Solver:
         else:
             self.generatecandidatepairs()
 
-        print(self)
+        print(self.candidatepairs)
 
     def __repr__(self):
         return str(self.orderedlist)
