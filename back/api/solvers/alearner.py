@@ -55,8 +55,10 @@ class Solver:
         try:
             self.candidatepairs.remove([pair[0],pair[1]])
         except:
-            self.candidatepairs.remove([pair[1],pair[0]])
-
+            try:
+                self.candidatepairs.remove([pair[1],pair[0]])
+            except:
+                pass
 
     def newpair(self):
         try:
@@ -73,13 +75,9 @@ class Solver:
 
         self.custom["choicesmade"][winner].append(loser)
 
-        #review any inferred knowledge
-        for n in self.custom["choicesmade"].items():
-            if n[0] is not winner:
-                if loser not in n[1]:
-                    if winner in n[1]:
-                        n[1].append(loser)
-                        self.removecandidatepair((n[0],loser))
+        self.custom["choicesmade"][winner] = list(set(self.custom["choicesmade"][winner]+self.custom["choicesmade"][loser]))
+        for i in self.custom["choicesmade"][loser]:
+            self.removecandidatepair((winner,i))
 
 
         import operator
