@@ -100,18 +100,3 @@ class Solver:
         "choicesmade":self.custom["choicesmade"]}}
         db['rtks'].update({"id":self.rtkid}, {"$set": pythonobject},upsert=False)
 
-if __name__=="__main__":
-
-    rtkid = "03cd32f0-c856-11e6-bcb7-c85b765fdb27"
-    s = Solver(rtkid)
-    s.generatecandidatepairs()
-    print("candidatepairs", s.candidatepairs)
-    for i in range(3):
-        i = s.newpair()
-        vote = randint(0,1)
-        winner = i[vote]
-        loser = i[vote-1]
-        print("progress",s.pickchoice(winner, loser))
-    print("orderedlist",s.getorderedlist())
-    print("choicesmade",s.custom["choicesmade"])
-    s.save()
