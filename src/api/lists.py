@@ -28,6 +28,12 @@ def allow_cors(func):
 def generateid():
     return str(uuid.uuid1())
 
+@bottle.route('/<:re:.*>', method='OPTIONS')
+#@bottle.route('/:#.*#', method='OPTIONS')  # Also tried old syntax.
+def enableCORSGenericRoute():
+    print 'Generic regex route'
+    bottle.response.headers['Access-Control-Allow-Origin'] = '*'
+
 @post('/lists')
 @allow_cors
 def creation_handler():
