@@ -8,6 +8,16 @@ db = connection.testdb
 
 class Solver:
 
+    '''
+    Must implement
+    __init__(self, rtkid)
+    newpair(self)
+    pickchoice(self, winner, loser)
+    getprogress(self)
+    getorderedlist(self)
+    save(self)
+    '''
+
     def __init__(self, rtkid):
         #mandatory
         self.rtkid = rtkid
@@ -54,7 +64,6 @@ class Solver:
             self.candidatepairs.remove[[pair[0],pair[1]])
         except:
             self.candidatepairs.remove([pair[1],pair[0]])
-
 
 
     def newpair(self):
