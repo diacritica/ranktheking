@@ -19,6 +19,8 @@ def allow_cors(func):
     """ this is a decorator which enable CORS for specified endpoint """
     def wrapper(*args, **kwargs):
         response.headers['Access-Control-Allow-Origin'] = '*' # * in case you want to be accessed via any website
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+        response.headers['Access-Control-Allow-Methods'] = 'PUT, POST, GET, DELETE, OPTIONS'
         return func(*args, **kwargs)
 
     return wrapper
