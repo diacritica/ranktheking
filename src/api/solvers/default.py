@@ -47,9 +47,15 @@ class Solver:
 
     def removecandidatepair(self,pair):
         try:
-            self.candidatepairs.remove([pair[0],pair[1]])
+            self.candidatepairs.remove((pair[0],pair[1])
+        except:
+            self.candidatepairs.remove((pair[1],pair[0]))
+        try:
+            self.candidatepairs.remove[[pair[0],pair[1]])
         except:
             self.candidatepairs.remove([pair[1],pair[0]])
+
+
 
     def newpair(self):
         try:
