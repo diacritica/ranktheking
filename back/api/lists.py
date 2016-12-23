@@ -283,4 +283,4 @@ def detail_handler(artk):
 @route('/<:re:.*>', method='OPTIONS')
 def enableCORSGenericRoute():
 
-    bottle.response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Origin'] = '*'
