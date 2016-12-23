@@ -113,11 +113,10 @@
 (extend-type CreateRtks
   potok/WatchEvent
   (watch [{:keys [name solver ocluded]} state stream]
-    (-> #_{:name name
+    (-> {:name name
          :listid (:selected-collection state)
          :solvertype solver
-           :partialocclusion ocluded}
-        {:name name :listid (:selected-collection state)}
+         :partialocclusion ocluded}
         api/create-rtks
         (p/then #(->StartAskForPair
                   (:selected-collection state)

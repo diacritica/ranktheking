@@ -95,3 +95,4 @@ pom.xml
 .lein-*
 .repl
 .nrepl-port
+front/resources/public/js/compiled/out/
