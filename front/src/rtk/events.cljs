@@ -7,6 +7,7 @@
 (defrecord Reload [])
 (defrecord Navigate [screen])
 (defrecord Error [error])
+(defrecord CloseError [])
 
 ;; Fetch lists
 (defrecord SolverListFetched [list])
@@ -15,7 +16,7 @@
 
 ;; Create elements
 (defrecord CreateCollection [name items])
-(defrecord CreateRtks [name solver ocluded])
+(defrecord CreateRtks [name solver criterion ocluded])
 
 ;;
 (defrecord StartAskForPair [collection-id rtks-id])
@@ -53,7 +54,9 @@
 (extend-type Navigate
   potok/UpdateEvent
   (update [{:keys [screen]} state]
-    (assoc state :screen [screen :loading]))
+    (-> state
+        (assoc :screen [screen :loading])
+        (assoc :error nil)))
 
   potok/WatchEvent
   (watch [{:keys [screen]} state stream]
@@ -86,24 +89,25 @@
 (extend-type AskForPairResponse
   potok/UpdateEvent
   (update [{:keys [data]} state]
-    (let [{:keys [pair progress]} data
+    (let [{:keys [pair progress criterion rtk]} data
           [firstoption secondoption] pair]
       (-> state
+          (assoc :error nil)
           (assoc :screen [:new-pair])
           (assoc :current-pair {:first firstoption
                                 :second secondoption
-                                :progress progress})))))
+                                :progress progress
+                                :criterion criterion
+                                :rtk rtk})))))
 
 (extend-type StartAskForPair
   potok/UpdateEvent
   (update [{:keys [collection-id rtks-id]} state]
-    (println " >>> StartAskForPair - update " collection-id rtks-id )
     (-> state
         (assoc :selected-rtks rtks-id)))
 
   potok/WatchEvent
   (watch [{:keys [collection-id rtks-id]} state stream]
-    (println " >>> StartAskForPair - watch " collection-id rtks-id )
     (-> (api/ask-for-pair collection-id rtks-id)
         (p/then (fn [data]
                   (if (>= (:progress data) 1.0)
@@ -112,15 +116,17 @@
 
 (extend-type CreateRtks
   potok/WatchEvent
-  (watch [{:keys [name solver ocluded]} state stream]
+  (watch [{:keys [name solver criterion ocluded]} state stream]
     (-> {:name name
          :listid (:selected-collection state)
+         :criterion criterion
          :solvertype solver
          :partialocclusion ocluded}
         api/create-rtks
         (p/then #(->StartAskForPair
                   (:selected-collection state)
-                  %)))))
+                  %))
+        (p/catch #(->Error %)))))
 
 (extend-type StartRtksCreation
   potok/UpdateEvent
@@ -137,7 +143,6 @@
 (extend-type ShowRtksResult
   potok/UpdateEvent
   (update [{:keys [id]} state]
-    (println (str "SHOWING " id))
     (-> state
         (assoc :select-rtks id)
         (assoc :screen [:rtks-result])))
@@ -146,7 +151,6 @@
   (watch [{:keys [id]} state stream]
     (-> (api/fetch-rtks-detail id)
         (p/then (fn [data]
-                  (println (str ">>>> " data))
                   (->RtksDetailResult data)))))
   )
 
@@ -154,7 +158,6 @@
 (extend-type SendChoice
   potok/WatchEvent
   (watch [{:keys [rtks-id winner losser]} state stream]
-    (println ">>> " state)
     (-> (api/send-choice (:selected-rtks state)
                          {:winner winner
                           :loser losser})
@@ -169,7 +172,18 @@
 (extend-type Error
   potok/UpdateEvent
   (update [{:keys [error]} state]
-    (assoc state :error error)))
+    (assoc state :error error))
+
+  potok/WatchEvent
+  (watch [_ state stream]
+    (rx/timeout 10000 (->CloseError)))
+  )
+
+(extend-type CloseError
+  potok/UpdateEvent
+  (update [_ state]
+    (assoc state :error nil))
+  )
 
 (extend-type RtksDetailResult
   potok/UpdateEvent

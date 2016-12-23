@@ -9,11 +9,12 @@
   (let [solver-list (-> state :solver-list)
         submit-form
         (fn [e]
-          (let [name   (str/trim (.-value (rum/ref-node is "name")))
-                solver (str/trim (.-value (rum/ref-node is "solver")))
-                ocluded (.-checked (rum/ref-node is "ocluded"))]
+          (let [name      (str/trim (.-value (rum/ref-node is "name")))
+                solver    (str/trim (.-value (rum/ref-node is "solver")))
+                criterion (str/trim (.-value (rum/ref-node is "criterion")))
+                ocluded   (.-checked (rum/ref-node is "ocluded"))]
             (if (and (not (= name "")) (not (= solver "")))
-              (potok/emit! store (events/->CreateRtks name solver ocluded))
+              (potok/emit! store (events/->CreateRtks name solver criterion ocluded))
               #_(-> (api/create-collection {:name name
                                           :options (str/split options #"\n")})
                   (p/then (fn [result]
@@ -30,6 +31,10 @@
       [:select {:ref "solver" :class "form-control" :name "sorting-type"}
        (for [[idx solver] (map vector (iterate inc 0) solver-list)]
          [:option {:key (str "solver-" idx)} (:name solver)])]]
+
+     [:.form-group
+      [:label {:for "criterion-input"} "Criterio"]
+      [:input {:ref "criterion" :type "text" :class "form-control" :name "criterion-input"}]]
 
      [:.checkbox
       [:label {:for "ocluded-input"}
