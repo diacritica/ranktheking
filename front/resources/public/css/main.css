@@ -1,0 +1,20 @@
+body {
+  padding-top: 50px;
+}
+.starter-template {
+  padding: 40px 15px;
+  text-align: center;
+}
+.choice {
+    text-align: center;
+    font-family: cursive;
+    font-size: 200%;
+    border: 1px solid silver;
+    padding: 30px 10px;
+    margin-top: 28px;
+    display: block;
+}
+
+.choice:hover {
+    text-decoration: none;
+}
