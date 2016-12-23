@@ -34,7 +34,6 @@ def creation_handler():
 
         data = request.json
 
-
         if data is None:
             raise ValueError
 
@@ -123,7 +122,7 @@ def rtklisting_handler():
     response.headers['Content-Type'] = 'application/json'
     response.headers['Cache-Control'] = 'no-cache'
 
-    return dumps(db.rtks.find({},{"id":1,"name":1,"_id":0}))
+    return dumps(db.rtks.find({},{"id":1,"name":1,"orderprogress":1,"criterion":1,"_id":0}))
 
 
 @get('/solvers')
@@ -158,6 +157,8 @@ def creation_handler():
                 data['solvertype'] = "DEFAULT"
             if data.get('partialocclusion') is None:
                 data['partialocclusion'] = False
+            if data.get('criterion') is None:
+                data['criterion'] = "No specific criterion"
 
         except (TypeError, KeyError):
             raise ValueError
@@ -283,4 +284,3 @@ def detail_handler(artk):
 def enableCORSGenericRoute():
 
     bottle.response.headers['Access-Control-Allow-Origin'] = '*'
-
