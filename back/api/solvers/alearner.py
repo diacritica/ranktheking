@@ -27,6 +27,10 @@ class Solver:
         self.list = self.rtk['elements']
         self.orderedlist = self.rtk['orderedlist']
         self.orderprogress = self.rtk["orderprogress"]
+        try:
+            self.criterion = self.rtk["criterion"]
+        except:
+            self.criterion = "No specific criterion"
 
         try:
             self.custom["choicesmade"] = self.rtk['custom']['choicesmade']
@@ -96,6 +100,5 @@ class Solver:
 
     def save(self):
         pythonobject = {"candidatepairs":self.candidatepairs,"origcandidatepairs":self.origcandidatepairs,
-        "orderedlist":self.orderedlist,"orderprogress":self.orderprogress,"custom":{"choicesmade":self.custom["choicesmade"]}}
+        "orderedlist":self.orderedlist,"orderprogress":self.orderprogress,"criterion":self.criterion,"custom":{"choicesmade":self.custom["choicesmade"]}}
         db['rtks'].update({"id":self.rtkid}, {"$set": pythonobject},upsert=False)
-
