@@ -5,7 +5,7 @@
   [:div.container
    [:div.starter-template
     [:h1 "Rank the King"]
-    [:h2 "¿Cuantas veces habéis querido ordenar cosas?"]
+    [:h2 "¿Cuántas veces habéis querido ordenar cosas?"]
     [:p (str "Bacon ipsum dolor amet salami porchetta pig chuck. Andouille "
              "doner sirloin kevin. Tongue strip steak pancetta, pastrami tri-tip "
              "pork loin shoulder leberkas landjaeger frankfurter hamburger meatball. "

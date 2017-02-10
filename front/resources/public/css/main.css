@@ -18,3 +18,20 @@ body {
 .choice:hover {
     text-decoration: none;
 }
+
+.debug-panel {
+    position: absolute;
+    width: 500px;
+    opacity: 0.9;
+    top: 0px;
+    right: 0px;
+    margin: 0px;
+    z-index: 9999;
+    height: 30px;
+    transition: height 0.5s ease;
+    resize: none;
+}
+
+.debug-panel:hover, .debug-panel:focus {
+    height: 640px;
+}

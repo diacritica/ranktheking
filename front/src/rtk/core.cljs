@@ -4,6 +4,7 @@
             [promesa.core :as p]
             [beicon.core :as rx]
             [cuerdas.core :as str]
+            [cljs.pprint :refer [pprint]]
 
             [rtk.api :as api]
             [rtk.events :as events]
@@ -24,6 +25,7 @@
 (rum/defc main [state]
   (let [[screen] (-> state :screen)]
     [:div
+     [:textarea.debug-panel {:value (with-out-str (pprint state))}]
      [:nav {:class "navbar navbar-inverse navbar-fixed-top"}
       [:.container
        [:.navbar-header
